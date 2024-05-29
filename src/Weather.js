@@ -2,21 +2,21 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./Weather.css";
 
-export default function Weather() {
+export default function Weather(props) {
   const [weatherData, setWeatherData] = useState({ ready: false });
   function handleResponse(response) {
-    console.log(response.data);
     setWeatherData({
       ready: true,
       temperature: response.data.main.temp,
-      wind: response.data.main.wind,
-      city: response.data.name,
-      date: "Wednesday 12:00",
       humidity: response.data.main.humidity,
-      description: response.data.weather[0].description,
-      iconUrl: "https://ssl.gstatic.com/onebox/weather/64/cloudy.png",
+      date: "Wednesday 07:00",
+      description: response.data.weather.description,
+      iconUrl: "https://ssl.gstatic.com/onebox/weather/64/sunny.png",
+      wind: response.data.wind.speed,
+      city: response.data.name,
     });
   }
+
   if (weatherData.ready) {
     return (
       <div className="Weather">
@@ -25,19 +25,18 @@ export default function Weather() {
             <div className="col-9">
               <input
                 type="search"
-                placeholder="Enter a city..."
+                placeholder="Enter a city"
                 className="form-control"
                 autoFocus="on"
               />
             </div>
             <div className="col-3">
-              {" "}
               <input
                 type="submit"
                 value="Search"
                 className="btn btn-primary w-100"
               />
-            </div>{" "}
+            </div>
           </div>
         </form>
         <h1>{weatherData.city}</h1>
@@ -45,9 +44,13 @@ export default function Weather() {
           <li>{weatherData.date}</li>
           <li className="text-capitalize">{weatherData.description}</li>
         </ul>
-        <div className="row mt-3">
+        <div className="row">
           <div className="col-6">
-            <img src={weatherData.iconUrl} alt="Cloudy" />
+            <img
+              src={weatherData.iconUrl}
+              alt={weatherData.description}
+              className="float-left"
+            />
             <span className="temperature">
               {Math.round(weatherData.temperature)}
             </span>
@@ -55,18 +58,17 @@ export default function Weather() {
           </div>
           <div className="col-6">
             <ul>
-              <li>Precipitation: 43%</li>
-              <li>Humidity: {weatherData.humidity}%</li>
-              <li>Windy: {weatherData.wind}mph</li>
+              <li>Precipitation: 2%</li>
+              <li>Humidity: {weatherData.humidity}</li>
+              <li>Wind: {weatherData.wind}</li>
             </ul>
           </div>
         </div>
       </div>
     );
   } else {
-    const apiKey = "dd5d4dt911e62a0b832b58o66f3ab4f3";
-    let city = "London";
-    let apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${apiKey}&units=metrics`;
+    const apiKey = "9ef3fdc20e81bfb077e621d7e0bf3f6c";
+    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${props.defaultCity}&appid=${apiKey}&units=metric`;
     axios.get(apiUrl).then(handleResponse);
 
     return "Loading...";
